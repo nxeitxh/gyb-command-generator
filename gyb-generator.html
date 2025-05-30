@@ -3,71 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GYB Command Generator</title>
+    <title>GYB Command Generator - Haze Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Haze Color Palette Variables */
+        :root {
+            --haze-dark-blue: #0F6BAE;
+            --haze-medium-blue: #248BD6;
+            --haze-light-blue: #83B8FF;
+            --haze-lavender: #C6CDFF;
+            --haze-bg-dark: #181E2A; /* Custom dark background */
+            --haze-bg-container: #202836; /* Custom container background */
+            --haze-text-primary: #E0E7FF; /* Lighter than lavender for general text */
+            --haze-text-secondary: #A5B4FC; /* Lavender for secondary text/labels */
+            --haze-border-light: #313B4D;
+            --haze-border-accent: var(--haze-medium-blue);
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* Light gray background */
-            color: #1f2937; /* Dark gray text */
+            background-color: var(--haze-bg-dark);
+            color: var(--haze-text-primary);
+            padding-top: 2rem;
+            padding-bottom: 2rem;
         }
+        .main-container {
+            background-color: var(--haze-bg-container);
+            border: 1px solid var(--haze-border-light);
+            border-radius: 0.75rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 2rem;
+        }
+        .title-text {
+            font-weight: 600;
+            color: var(--haze-light-blue);
+            text-align: center;
+            margin-bottom: 2.5rem;
+            font-size: 1.875rem; /* text-3xl */
+        }
+
+        .form-group {
+            padding: 1rem;
+            border: 1px solid var(--haze-border-light);
+            border-radius: 0.5rem;
+            margin-bottom: 1.25rem;
+            background-color: transparent; /* Let container bg show through or set explicitly */
+        }
+
         .form-label {
-            @apply block text-sm font-medium text-gray-700 mb-1;
+            @apply block text-sm font-medium mb-1;
+            color: var(--haze-text-secondary);
         }
         .form-input, .form-select {
-            @apply mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm 
-                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm;
+            @apply mt-1 block w-full py-2 px-3 border bg-slate-700 rounded-md 
+                   focus:outline-none focus:ring-2 sm:text-sm;
+            border-color: var(--haze-border-light);
+            color: var(--haze-text-primary);
+            background-color: var(--haze-bg-dark); /* Inputs slightly darker */
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            appearance: none; /* For custom date picker arrow */
+        }
+        .form-input:focus, .form-select:focus {
+            border-color: var(--haze-border-accent);
+            box-shadow: 0 0 0 2px var(--haze-light-blue);
         }
         .form-input::placeholder {
-            color: #9ca3af; 
+            color: var(--haze-text-secondary);
+            opacity: 0.7;
         }
         .form-select option {
-            background-color: #ffffff;
-            color: #1f2937;
+            background-color: var(--haze-bg-dark);
+            color: var(--haze-text-primary);
         }
-        .form-checkbox {
-            @apply h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500;
+        
+        /* Toggle Switch Styles */
+        .toggle-switch-label {
+            @apply flex items-center cursor-pointer;
         }
+        .toggle-switch-input {
+            @apply sr-only; /* Hide default checkbox */
+        }
+        .toggle-switch-slider {
+            @apply relative w-10 h-5 bg-gray-600 rounded-full shadow-inner;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .toggle-switch-slider::before {
+            @apply absolute content-[''] w-3 h-3 bg-white rounded-full top-1 left-1 shadow;
+            transition: transform 0.2s ease-in-out;
+        }
+        .toggle-switch-input:checked + .toggle-switch-slider {
+            background-color: var(--haze-medium-blue);
+        }
+        .toggle-switch-input:checked + .toggle-switch-slider::before {
+            transform: translateX(1.25rem); /* 20px / 1.25rem */
+        }
+        .toggle-text {
+            @apply ml-3 text-sm;
+            color: var(--haze-text-primary);
+        }
+         .checkbox-group { /* For toggle switches */
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--haze-border-light);
+            border-radius: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+
         .group-hidden {
             display: none !important;
+        }
+        
+        .command-section-title {
+            font-weight: 500;
+            color: var(--haze-light-blue);
+            margin-bottom: 0.75rem;
+            font-size: 1.125rem;
         }
         #generatedCommand {
             white-space: pre-wrap; 
             word-break: break-all; 
-            font-family: 'Menlo', 'Monaco', 'Consolas', "Liberation Mono", "Courier New", monospace; /* Standard mono font */
-        }
-        .title-text {
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            color: #374151; /* Darker gray for title */
-        }
-        .main-container {
-            background-color: #ffffff; /* White background for container */
-            border: 1px solid #e5e7eb; /* Light border */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Subtle shadow */
-        }
-        .copy-button-simple {
-            @apply absolute top-2 right-2 bg-indigo-600 hover:bg-indigo-700 text-white 
-                   text-xs py-1 px-3 rounded-md transition-all duration-150 ease-in-out
-                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-75;
+            font-family: 'Menlo', 'Monaco', 'Consolas', "Liberation Mono", "Courier New", monospace;
+            color: #A7F3D0; /* Tailwind green-200 for command text */
         }
         .command-output-box {
-            @apply bg-gray-800 text-green-300 p-4 rounded-md shadow relative border border-gray-700;
+            @apply p-4 rounded-lg shadow relative mt-2;
+            background-color: #0D1117; /* Very dark, almost black for command box */
+            border: 1px solid var(--haze-border-light);
+        }
+        .copy-button-artistic {
+            @apply absolute top-3 right-3 text-white 
+                   text-xs py-1.5 px-3 rounded-md transition-all duration-150 ease-in-out
+                   focus:outline-none focus:ring-2 focus:ring-opacity-75;
+            background-color: var(--haze-medium-blue);
+            border-color: var(--haze-dark-blue);
+        }
+        .copy-button-artistic:hover {
+            background-color: var(--haze-light-blue);
+            color: var(--haze-bg-dark);
         }
         .footer-text {
-            @apply text-center text-xs text-gray-500;
+            @apply text-center text-xs mt-10;
+            color: var(--haze-text-secondary);
+            opacity: 0.8;
         }
+
+        /* Custom styling for date input appearance */
+        input[type="date"] {
+            position: relative;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 0.25rem;
+            color: var(--haze-lavender);
+            opacity: 0.7;
+            cursor: pointer;
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+
     </style>
 </head>
-<body class="p-4 md:p-8">
-    <div class="max-w-2xl mx-auto p-6 md:p-8 rounded-lg main-container">
-        <header class="mb-8">
-            <h1 class="text-2xl text-center title-text">GYB Command Generator</h1>
+<body>
+    <div class="max-w-2xl mx-auto main-container">
+        <header>
+            <h1 class="text-3xl title-text">GYB Command Generator</h1>
         </header>
 
-        <form id="gybForm" class="space-y-4">
-            <div>
+        <form id="gybForm" class="space-y-0">
+            <div class="form-group">
                 <label for="osSelect" class="form-label">Operating System:</label>
                 <select id="osSelect" class="form-select">
                     <option value="windows">Windows (.\gyb)</option>
@@ -75,7 +183,7 @@
                 </select>
             </div>
 
-            <div>
+            <div class="form-group">
                 <label for="actionSelect" class="form-label">Action:</label>
                 <select id="actionSelect" class="form-select">
                     <option value="backup">Backup</option>
@@ -88,79 +196,88 @@
                 </select>
             </div>
 
-            <div id="sourceEmailGroup">
+            <div id="sourceEmailGroup" class="form-group">
                 <label for="sourceEmailInput" id="sourceEmailLabel" class="form-label">Source Email Address:</label>
                 <input type="email" id="sourceEmailInput" class="form-input" placeholder="user@example.com">
             </div>
 
-            <div id="targetEmailGroup" class="group-hidden">
+            <div id="targetEmailGroup" class="form-group group-hidden">
                 <label for="targetEmailInput" class="form-label">Target Email Address (for Restore):</label>
                 <input type="email" id="targetEmailInput" class="form-input" placeholder="target@example.com">
             </div>
 
-            <div id="folderGroup" class="group-hidden">
+            <div id="folderGroup" class="form-group group-hidden">
                 <label for="folderNameInput" id="folderNameLabel" class="form-label">Folder Name:</label>
-                <input type="text" id="folderNameInput" class="form-input" placeholder="e.g., GYB-Backup-user@example.com">
-                <p class="mt-1 text-xs text-gray-500">Default path generated from Source Email if blank.</p>
+                <input type="text" id="folderNameInput" class="form-input" placeholder="e.g., GYB-GMail-Backup-user@example.com">
+                <p class="mt-1 text-xs text-gray-400">Default path generated from Source Email if blank.</p>
             </div>
             
-            <div id="beforeDateGroup" class="group-hidden">
+            <div id="beforeDateGroup" class="form-group group-hidden">
                 <label for="beforeDateInput" class="form-label">Search: Before Date (YYYY/MM/DD):</label>
                 <input type="date" id="beforeDateInput" class="form-input">
             </div>
 
-            <div id="afterDateGroup" class="group-hidden">
+            <div id="afterDateGroup" class="form-group group-hidden">
                 <label for="afterDateInput" class="form-label">Search: After Date (YYYY/MM/DD):</label>
                 <input type="date" id="afterDateInput" class="form-input">
             </div>
             
-            <div id="searchQueryGroup" class="group-hidden">
+            <div id="searchQueryGroup" class="form-group group-hidden">
                 <label for="searchQueryInput" class="form-label">Advanced Search Query (Optional):</label>
                 <input type="text" id="searchQueryInput" class="form-input" placeholder="e.g., label:important has:attachment">
-                <p class="mt-1 text-xs text-gray-500">Combines with date filters.</p>
+                <p class="mt-1 text-xs text-gray-400">Combines with date filters.</p>
             </div>
 
+            <div id="restoreOptionsMasterGroup" class="group-hidden">
+                <div id="removeLabelsGroup" class="checkbox-group group-hidden">
+                    <label class="toggle-switch-label">
+                        <input type="checkbox" id="removeLabelsCheckbox" class="toggle-switch-input">
+                        <span class="toggle-switch-slider"></span>
+                        <span class="toggle-text">Remove Labels (on Restore)</span>
+                    </label>
+                </div>
 
-            <div id="removeLabelsGroup" class="flex items-center group-hidden">
-                <input id="removeLabelsCheckbox" type="checkbox" class="form-checkbox">
-                <label for="removeLabelsCheckbox" class="ml-2 block text-sm text-gray-700">Remove Labels (on Restore)</label>
+                <div id="addLabelRestoredGroupOuter" class="checkbox-group group-hidden">
+                     <label class="toggle-switch-label mb-2">
+                        <input type="checkbox" id="addLabelRestoredCheckbox" class="toggle-switch-input">
+                        <span class="toggle-switch-slider"></span>
+                        <span class="toggle-text">Add Label to Restored Emails</span>
+                    </label>
+                    <div id="labelNameRestoredGroup" class="mt-2 group-hidden">
+                        <label for="labelNameRestoredInput" class="form-label text-xs">Label to Add:</label>
+                        <input type="text" id="labelNameRestoredInput" class="form-input text-sm py-1.5" placeholder="e.g., Restored-Backup">
+                    </div>
+                </div>
             </div>
 
-            <div id="addLabelRestoredGroup" class="flex items-center group-hidden">
-                <input id="addLabelRestoredCheckbox" type="checkbox" class="form-checkbox">
-                <label for="addLabelRestoredCheckbox" class="ml-2 block text-sm text-gray-700">Add Label to Restored Emails</label>
-            </div>
-
-            <div id="labelNameRestoredGroup" class="group-hidden">
-                <label for="labelNameRestoredInput" class="form-label">Label to Add:</label>
-                <input type="text" id="labelNameRestoredInput" class="form-input" placeholder="e.g., Restored-Backup">
-            </div>
-
-            <div class="flex items-center mt-1">
-                <input id="useServiceAccountCheckbox" type="checkbox" class="form-checkbox">
-                <label for="useServiceAccountCheckbox" class="ml-2 block text-sm text-gray-700">Use Service Account (--service-account)</label>
+            <div class="checkbox-group">
+                <label class="toggle-switch-label">
+                    <input type="checkbox" id="useServiceAccountCheckbox" class="toggle-switch-input">
+                    <span class="toggle-switch-slider"></span>
+                    <span class="toggle-text">Use Service Account (--service-account)</span>
+                </label>
             </div>
         </form>
 
-        <div class="mt-10">
-            <h2 class="text-lg font-semibold text-gray-700 mb-3">Generated GYB Command:</h2>
+        <div class="mt-8">
+            <h2 class="command-section-title">Generated GYB Command:</h2>
             <div class="command-output-box">
                 <pre id="generatedCommand">.\gyb --action backup --email source@example.com</pre>
-                <button id="copyCommandButton" class="copy-button-simple">
+                <button id="copyCommandButton" class="copy-button-artistic">
                     Copy
                 </button>
             </div>
-            <div id="copyMessage" class="text-sm text-green-600 mt-2 h-4"></div>
+            <div id="copyMessage" class="text-sm text-green-400 mt-2 h-4"></div>
         </div>
 
-        <footer class="mt-10 footer-text">
+        <footer class="footer-text">
             <p>Ensure GYB is installed and correctly configured in your environment.</p>
             <p>Verify the command before execution, especially for destructive actions like Purge.</p>
         </footer>
     </div>
 
     <script>
-        // DOM Elements
+        // DOM Elements (no changes needed here)
         const osSelect = document.getElementById('osSelect');
         const actionSelect = document.getElementById('actionSelect');
         const sourceEmailInput = document.getElementById('sourceEmailInput');
@@ -179,23 +296,24 @@
         const copyCommandButton = document.getElementById('copyCommandButton');
         const copyMessage = document.getElementById('copyMessage');
 
-        // Groups for visibility
+        // Groups for visibility (no changes needed here)
         const sourceEmailGroup = document.getElementById('sourceEmailGroup');
         const targetEmailGroup = document.getElementById('targetEmailGroup');
         const folderGroup = document.getElementById('folderGroup');
         const beforeDateGroup = document.getElementById('beforeDateGroup');
         const afterDateGroup = document.getElementById('afterDateGroup');
         const searchQueryGroup = document.getElementById('searchQueryGroup');
+        
+        const restoreOptionsMasterGroup = document.getElementById('restoreOptionsMasterGroup');
         const removeLabelsGroup = document.getElementById('removeLabelsGroup');
-        const addLabelRestoredGroup = document.getElementById('addLabelRestoredGroup');
+        const addLabelRestoredGroupOuter = document.getElementById('addLabelRestoredGroupOuter');
         const labelNameRestoredGroup = document.getElementById('labelNameRestoredGroup');
 
-        // Function to update form visibility based on selected action
+
         function updateFormVisibility() {
             const action = actionSelect.value;
 
-            // Hide all optional groups first
-            [targetEmailGroup, folderGroup, beforeDateGroup, afterDateGroup, searchQueryGroup, removeLabelsGroup, addLabelRestoredGroup, labelNameRestoredGroup].forEach(group => group.classList.add('group-hidden'));
+            [targetEmailGroup, folderGroup, beforeDateGroup, afterDateGroup, searchQueryGroup, restoreOptionsMasterGroup, removeLabelsGroup, addLabelRestoredGroupOuter, labelNameRestoredGroup].forEach(group => group.classList.add('group-hidden'));
             
             sourceEmailGroup.classList.toggle('group-hidden', action === 'create-project');
 
@@ -211,8 +329,10 @@
                 targetEmailGroup.classList.remove('group-hidden');
                 folderGroup.classList.remove('group-hidden');
                 folderNameLabel.textContent = 'Restore from Folder:';
-                removeLabelsGroup.classList.remove('group-hidden');
-                addLabelRestoredGroup.classList.remove('group-hidden');
+                
+                restoreOptionsMasterGroup.classList.remove('group-hidden');
+                removeLabelsGroup.classList.remove('group-hidden'); 
+                addLabelRestoredGroupOuter.classList.remove('group-hidden'); 
                 if (addLabelRestoredCheckbox.checked) {
                     labelNameRestoredGroup.classList.remove('group-hidden');
                 }
@@ -230,18 +350,16 @@
                 searchQueryGroup.classList.remove('group-hidden');
             } else if (action === 'check-service-account' || action === 'revoke-service-account') {
                 sourceEmailLabel.textContent = 'Email Address for Service Account Action:';
-            } else if (action === 'create-project') {
-                // Most fields are hidden
             }
             generateCommand(); 
         }
 
-        function formatDate(dateString) {
+        function formatDate(dateString) { // No changes
             if (!dateString) return '';
             return dateString.replace(/-/g, '/');
         }
 
-        function generateCommand() {
+        function generateCommand() { 
             const os = osSelect.value;
             const action = actionSelect.value;
             const sourceEmail = sourceEmailInput.value.trim();
@@ -250,10 +368,10 @@
             const beforeDate = formatDate(beforeDateInput.value);
             const afterDate = formatDate(afterDateInput.value);
             const customSearch = searchQueryInput.value.trim();
-            const removeLabels = removeLabelsCheckbox.checked;
-            const addLabelRestored = addLabelRestoredCheckbox.checked;
-            const labelNameRestored = labelNameRestoredInput.value.trim();
-            const useServiceAccount = useServiceAccountCheckbox.checked;
+            const removeLabels = removeLabelsCheckbox.checked; 
+            const addLabelRestored = addLabelRestoredCheckbox.checked; 
+            const labelNameRestoredVal = labelNameRestoredInput.value.trim();
+            const useServiceAccount = useServiceAccountCheckbox.checked; 
 
             let gybExecutable = os === 'windows' ? '.\\gyb' : 'gyb';
             let commandParts = [gybExecutable];
@@ -269,7 +387,8 @@
             if (action === 'backup' || action === 'restore' || action === 'purge') {
                 let effectiveFolder = folderName;
                 if (!effectiveFolder && sourceEmail) { 
-                    effectiveFolder = `GYB-Backup-${sourceEmail}`; // Standard default folder name
+                    // Updated default folder name format
+                    effectiveFolder = `GYB-GMail-Backup-${sourceEmail}`; 
                 }
                 if (effectiveFolder) commandParts.push(`--local-folder "${effectiveFolder}"`);
             }
@@ -287,8 +406,8 @@
 
             if (action === 'restore') {
                 if (removeLabels) commandParts.push('--strip-labels');
-                if (addLabelRestored && labelNameRestored) {
-                    commandParts.push(`--label-restored "${labelNameRestored}"`);
+                if (addLabelRestored && labelNameRestoredVal) {
+                    commandParts.push(`--label-restored "${labelNameRestoredVal}"`);
                 }
             }
             
@@ -300,21 +419,21 @@
         }
 
         // Event Listeners
-        [osSelect, actionSelect, sourceEmailInput, targetEmailInput, folderNameInput, beforeDateInput, afterDateInput, searchQueryInput, removeLabelsCheckbox, labelNameRestoredInput, useServiceAccountCheckbox].forEach(el => {
+        [osSelect, actionSelect, sourceEmailInput, targetEmailInput, folderNameInput, beforeDateInput, afterDateInput, searchQueryInput, removeLabelsCheckbox, labelNameRestoredInput, useServiceAccountCheckbox, addLabelRestoredCheckbox].forEach(el => {
             const eventType = (el.type === 'checkbox' || el.tagName === 'SELECT' || el.type === 'date') ? 'change' : 'input';
             el.addEventListener(eventType, generateCommand);
         });
         
         actionSelect.addEventListener('change', updateFormVisibility);
 
-        addLabelRestoredCheckbox.addEventListener('change', () => {
+        addLabelRestoredCheckbox.addEventListener('change', () => { 
             if (actionSelect.value === 'restore') {
                  labelNameRestoredGroup.classList.toggle('group-hidden', !addLabelRestoredCheckbox.checked);
             }
-            generateCommand();
+            generateCommand(); 
         });
 
-        copyCommandButton.addEventListener('click', () => {
+        copyCommandButton.addEventListener('click', () => { 
             const commandText = generatedCommandPre.textContent;
             const tempTextArea = document.createElement('textarea');
             tempTextArea.value = commandText;
@@ -325,22 +444,21 @@
             try {
                 document.execCommand('copy');
                 copyMessage.textContent = 'Command Copied!';
-                copyMessage.classList.remove('text-red-500');
-                copyMessage.classList.add('text-green-600');
+                copyMessage.classList.remove('text-red-400'); 
+                copyMessage.classList.add('text-green-400'); 
             } catch (err) {
                 copyMessage.textContent = 'Copy Failed. Please copy manually.';
-                copyMessage.classList.remove('text-green-600');
-                copyMessage.classList.add('text-red-500');
+                copyMessage.classList.remove('text-green-400');
+                copyMessage.classList.add('text-red-400'); 
                 console.error('Fallback: Unable to copy command', err);
             }
             document.body.removeChild(tempTextArea);
             setTimeout(() => { copyMessage.textContent = ''; }, 3000);
         });
 
-        // Initial setup
         updateFormVisibility(); 
         
-        if (window.location.search.includes('loadExample')) {
+        if (window.location.search.includes('loadExample')) { 
             osSelect.value = 'windows';
             actionSelect.value = 'restore';
             sourceEmailInput.value = 'rauter@lcpmd.com'; 
